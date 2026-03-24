@@ -46,15 +46,27 @@ def fourier(path_to_file):
     magnitude_spectrum = np.abs(f_shift) #magnitude spectrum calculation
     magnitude_spectrum_log = np.log1p(magnitude_spectrum) #calculated magnitude we transform to log scale
 
+    #This code tests the fourier transform. If the error equals 0.0000000000 then the transformation went correct
+    f_ishift = np.fft.ifftshift(f_shift)
+    img_back = np.fft.ifft2(f_ishift)
+    img_back_real = np.abs(img_back)
+    mean_error = np.mean(np.abs(img_data - img_back_real))
+    print(f"\nInverse mean error: {mean_error:.10f}")
+
     plt.figure(figsize=(12, 6))
-    plt.subplot(121)
+    plt.subplot(131)
     plt.imshow(img_data, cmap='gray')
     plt.title('Original Image (Grayscale)')
     plt.axis('off')
 
-    plt.subplot(122)
+    plt.subplot(132)
     plt.imshow(magnitude_spectrum_log, cmap='magma')
     plt.title('Fourier Magnitude Spectrum (Log Scale)')
+    plt.axis('off')
+
+    plt.subplot(133)
+    plt.imshow(img_back_real, cmap='gray')
+    plt.title('Extraction of the Original Image')
     plt.axis('off')
 
     plt.tight_layout()
