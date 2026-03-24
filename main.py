@@ -1,4 +1,5 @@
 import struct
+import os
 
 filePath = input("Enter file path: ")
 
@@ -36,6 +37,8 @@ try:
     if readFile(filePath):
         print("Signature verified. Decoding PNG header...\n")
         png_info = decode(filePath)
+        size_in_byte = os.path.getsize(filePath)
+        print(f"File size on disk: {size_in_byte} bytes.")
         print("Info found:")
         for key, value in png_info.items():
             print(f"{key}: {value}")
