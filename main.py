@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import struct
 import os
+import binascii
 
 filePath = input("Enter file path: ")
 
@@ -17,24 +18,43 @@ def decode(path_to_file):
     with open(path_to_file, 'rb') as file:
         file.read(8) #We already have checked first 8 bits in readFile()
 
-        file.read(4) #chunk length is always 13
+        while True:
+            length_bytes = file.read(4)
+            if not length_bytes:
+                break
+            length = struct.unpack('>I', length_bytes)[0]
 
-        chunk_type = file.read(4)
-        if chunk_type != b'IHDR':
-            raise ValueError("Error: The first block after signature is not IHDR.")
-        
-        ihdr_data = file.read(13)
-        width, height, bit_depth, color_type, compression, filter_method, interlace = struct.unpack('>IIBBBBB', ihdr_data)
+            chunk_type = file.read(4)
+            chunk_data = file.read(length)
 
-        return {
-            "Width (px)": width,
-            "Height (px)": height,
-            "Bit depth": bit_depth,
-            "Color type": color_type,
-            "Compression": compression,
-            "Filter": filter_method,
-            "Interlace": interlace
-        }
+            crc = file.read(4)
+
+            if chunk_type in [b'IHDR', b'PLTE', b'IDAT', b'IEND']:
+                block_name = chunk_type.decode('ascii')
+                print(f"\n[+] Critical chunk found: {block_name} (Size: {length} bytes)")
+
+                if chunk_type == b'IHDR':
+                    w, h, depth, c_type, comp, filt, interl = struct.unpack('>IIBBBBB', chunk_data)
+                    print(f"    Width: {w} px, Height: {h} px")
+                    print(f"    Byte Depth: {depth}, Color type: {c_type}")
+                    print(f"    Compression: {comp}, Filter: {filt}, Interlace: {interl}")
+                
+                elif chunk_type == b'PLTE':
+                    color_quantity = length // 3
+                    print(f"    Table of pallete consists of: {color_quantity} colors.")
+                
+                elif chunk_type == b'IDAT':
+                    if length > 0:
+                        hex_data = binascii.hexlify(chunk_data[:16]).decode('ascii')
+                        print(f"    Content of the file (HEX): {hex_data}...")
+                        print(f"    (The rest was ignored to ensure the readability for the user)")
+                
+                elif chunk_type == b'IEND':
+                    print(f"    It means the valid end of png file")
+                    break
+            else:
+                pass
+
 
 def fourier(path_to_file):
     img = Image.open(path_to_file).convert('L') #Converting image to grayscale
@@ -75,12 +95,9 @@ def fourier(path_to_file):
 try:
     if readFile(filePath):
         print("Signature verified. Decoding PNG header...\n")
-        png_info = decode(filePath)
         size_in_byte = os.path.getsize(filePath)
         print(f"File size on disk: {size_in_byte} bytes.")
-        print("Info found:")
-        for key, value in png_info.items():
-            print(f"{key}: {value}")
+        decode(filePath)
         print("\nOpening image viewer...")
         os.startfile(filePath)
         print("\nOpening Plots...")
