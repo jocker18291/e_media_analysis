@@ -42,6 +42,8 @@ try:
         print("Info found:")
         for key, value in png_info.items():
             print(f"{key}: {value}")
+        print("\nOpening image viewer...")
+        os.startfile(filePath)
 except FileNotFoundError:
     print("File not found.")
 except Exception as e:
