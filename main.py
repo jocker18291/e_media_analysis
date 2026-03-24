@@ -1,3 +1,6 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
 import struct
 import os
 
@@ -33,6 +36,30 @@ def decode(path_to_file):
             "Interlace": interlace
         }
 
+def fourier(path_to_file):
+    img = Image.open(path_to_file).convert('L') #Converting image to grayscale
+    img_data = np.array(img) #transfering data to array
+    
+    f_transform = np.fft.fft2(img_data) #fast fourier transform
+    f_shift = np.fft.fftshift(f_transform) #we shift the zero frequency to the center
+
+    magnitude_spectrum = np.abs(f_shift) #magnitude spectrum calculation
+    magnitude_spectrum_log = np.log1p(magnitude_spectrum) #calculated magnitude we transform to log scale
+
+    plt.figure(figsize=(12, 6))
+    plt.subplot(121)
+    plt.imshow(img_data, cmap='gray')
+    plt.title('Original Image (Grayscale)')
+    plt.axis('off')
+
+    plt.subplot(122)
+    plt.imshow(magnitude_spectrum_log, cmap='magma')
+    plt.title('Fourier Magnitude Spectrum (Log Scale)')
+    plt.axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
 try:
     if readFile(filePath):
         print("Signature verified. Decoding PNG header...\n")
@@ -44,6 +71,8 @@ try:
             print(f"{key}: {value}")
         print("\nOpening image viewer...")
         os.startfile(filePath)
+        print("\nOpening Plots...")
+        fourier(filePath)
 except FileNotFoundError:
     print("File not found.")
 except Exception as e:
