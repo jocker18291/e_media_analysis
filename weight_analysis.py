@@ -1,19 +1,36 @@
 import os
 from PIL import Image
 import zipfile
+import matplotlib.pyplot as plt
 
-def analyze_weight(file_path):
-    img_rgb = Image.open(file_path).convert('RGB')
-    img_rgb.save("result_dedicated.png", optimize=True)
+def analyze_weight(dir_path):
+    results = {"name": [], "png": [], "zip": []}
 
-    with open("raw_data.bin", "wb") as f:
-        f.write(img_rgb.tobytes())
+    for file in os.listdir(dir_path):
+        if file.endswith(".png"):
+            path = os.path.join(dir_path, file)
+            img = Image.open(path).convert("RGB")
+
+            png_size = os.path.getsize(path)
+
+            raw_path = "temp.bin"
+            zip_path = "temp.zip"
+            with open(raw_path, "wb") as f:
+                f.write(img.tobytes())
+            with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+                z.write(raw_path)
+            zip_size = os.path.getsize(zip_path)
+
+            results["name"].append(file)
+            results["png"].append(png_size / 1024)
+            results["zip"].append(zip_size / 1024)
+
+            isGreater = png_size > zip_size
+
+            print(f"Analyzed {file}: PNG size = {png_size} bytes, ZIP size = {zip_size} bytes. {'PNG is larger' if isGreater else 'ZIP is larger'}.")
     
-    with zipfile.ZipFile("result_general.zip", "w", zipfile.ZIP_DEFLATED) as z:
-        z.write("raw_data.bin")
+    os.remove("temp.bin")
+    os.remove("temp.zip")
     
-    size_png = os.path.getsize("result_dedicated.png")
-    size_zip = os.path.getsize("result_general.zip")
+    return results
 
-    print(f"PNG (Dedicated): {size_png} bytes")
-    print(f"RAW + ZIP (General): {size_zip} bytes")

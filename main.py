@@ -6,6 +6,7 @@ from png_decoder import decode
 from png_signature import readFile
 
 filePath = input("Enter file path: ")
+dirName = input("Enter directory path: ")
 
 try:
     if readFile(filePath):
@@ -20,7 +21,7 @@ try:
         print("\nOpening Plots...")
         fourier(filePath)
         print("\nAnalyzing weight...")
-        analyze_weight(filePath)
+        analyze_weight(dirName)
 except FileNotFoundError:
     print("File not found.")
 except Exception as e:
