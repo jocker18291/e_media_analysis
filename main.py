@@ -1,4 +1,5 @@
 import os
+from weight_analysis import analyze_weight
 from fourier_analysis import fourier
 from png_anonymizer import anonymize
 from png_decoder import decode
@@ -18,6 +19,8 @@ try:
         os.startfile(filePath)
         print("\nOpening Plots...")
         fourier(filePath)
+        print("\nAnalyzing weight...")
+        analyze_weight(filePath)
 except FileNotFoundError:
     print("File not found.")
 except Exception as e:
