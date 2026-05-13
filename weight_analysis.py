@@ -1,7 +1,6 @@
 import os
 from PIL import Image
 import zipfile
-import matplotlib.pyplot as plt
 
 def analyze_weight(dir_path):
     results = {"name": [], "png": [], "zip": []}
@@ -27,7 +26,7 @@ def analyze_weight(dir_path):
 
             isGreater = png_size > zip_size
 
-            print(f"Analyzed {file}: PNG size = {png_size} bytes, ZIP size = {zip_size} bytes. {'PNG is larger' if isGreater else 'ZIP is larger'}.")
+            print(f"Analyzed {file}: PNG size = {png_size} bytes, ZIP size = {zip_size} bytes. {'PNG is larger (!)' if isGreater else 'ZIP is larger'}.")
     
     os.remove("temp.bin")
     os.remove("temp.zip")
