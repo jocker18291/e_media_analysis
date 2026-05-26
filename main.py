@@ -1,10 +1,12 @@
 import os
+from weight_analysis import analyze_weight
 from fourier_analysis import fourier
 from png_anonymizer import anonymize
 from png_decoder import decode
 from png_signature import readFile
 
 filePath = input("Enter file path: ")
+dirName = input("Enter directory path: ")
 
 try:
     if readFile(filePath):
@@ -18,6 +20,8 @@ try:
         os.startfile(filePath)
         print("\nOpening Plots...")
         fourier(filePath)
+        print("\nAnalyzing weight...")
+        analyze_weight(dirName)
 except FileNotFoundError:
     print("File not found.")
 except Exception as e:
