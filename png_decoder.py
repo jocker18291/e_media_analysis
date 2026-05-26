@@ -71,35 +71,6 @@ def decode(path_to_file):
                     else:
                         print("    [!] Invalid tIME chunk. Expected 7 bytes.")
                 
-                elif chunk_type == b'zTXt':
-                    parts = chunk_data.split(b'\x00', 1)
-
-                    if len(parts) == 2:
-                        keyword = parts[0].decode('latin-1', errors='ignore')
-                        
-                        # The first byte of the second part is the compression method
-                        compression_method = parts[1][0]
-                        # Everything after the first byte is the actual zipped text
-                        compressed_data = parts[1][1:]
-
-                        print(f"    [!] Complex Chunk Detected: zTXt (Compressed Text)")
-                        print(f"    Keyword: {keyword}")
-
-                        if compression_method == 0:
-                            try:
-                                decompressed_bytes = zlib.decompress(compressed_data)
-                                decompressed_text = decompressed_bytes.decode('latin-1', errors='ignore')
-                                
-                                # Print only first 50 characters so it doesn't flood the console
-                                print(f"    Decompressed Text: {decompressed_text[:50]}...")
-                                print(f"    (Compression saved {len(compressed_data)} -> {len(decompressed_bytes)} bytes)")
-                            except zlib.error:
-                                print("    [!] Failed to decompress zlib data.")
-                        else:
-                            print(f"    [!] Unknown compression method: {compression_method}")
-                    else:
-                        print("    [!] Failed to parse zTXt chunk.")
-                
                 elif chunk_type in [b'tRNS', b'gAMA', b'cHRM']:
                     if chunk_type == b'tRNS':
                         # color_type 0 = grayscale, 2 = truecolor (RGB), 3 = indexed-color
