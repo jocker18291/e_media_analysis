@@ -102,12 +102,17 @@ def decode(path_to_file):
                 
                 elif chunk_type in [b'tRNS', b'gAMA', b'cHRM']:
                     if chunk_type == b'tRNS':
-                        if color_type == 1:
+                        # color_type 0 = grayscale, 2 = truecolor (RGB), 3 = indexed-color
+                        if color_type is None:
+                            print("   [!] tRNS found before IHDR; color type unknown")
+                        elif color_type == 3:
                             print(f"   Transparency for indexed-color: {length} bytes")
                         elif color_type == 2:
                             print(f"   Transparency for true-color: {length} bytes")
-                        elif color_type == 3:
+                        elif color_type == 0:
                             print(f"   Transparency for grayscale: {length} bytes")
+                        else:
+                            print(f"   Transparency chunk for unexpected color type: {color_type} (length {length})")
                     
                     elif chunk_type == b'gAMA':
                         gamma_value = struct.unpack('>I', chunk_data)[0] / 100000
