@@ -115,13 +115,13 @@ def anonymize(path_to_file, output_path):
                     break
 
             # Summary output
-            print(f"\n[+] Anonymization complete")
+            print("\n[+] Anonymization complete")
             print(f"    Output file: {output_path}")
             print(f"    Chunks retained: {chunk_count}")
             print(f"    Total bytes removed: {total_bytes_removed}")
 
             if removed_chunks:
-                print(f"    Removed chunk types:")
+                print("    Removed chunk types:")
                 for chunk_name, count in sorted(removed_chunks.items()):
                     print(f"      • {chunk_name}: {count}")
 
