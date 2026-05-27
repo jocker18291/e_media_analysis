@@ -86,7 +86,7 @@ def decode(path_to_file):
                     
                     elif chunk_type == b'gAMA':
                         gamma_value = struct.unpack('>I', chunk_data)[0] / 100000
-                        print(f"   Gamma value: {gamma_value}")
+                        print(f"   Gamma value: {gamma_value}") # gamma value calculates the relation between the value stored in a pixel and the brightness of it.
                     
                     elif chunk_type == b'cHRM':
                         white_x, white_y, red_x, red_y, green_x, green_y, blue_x, blue_y = struct.unpack('>IIIIIIII', chunk_data)

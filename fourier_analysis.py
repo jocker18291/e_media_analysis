@@ -4,14 +4,21 @@ from PIL import Image
 
 
 def fourier(path_to_file):
-    img = Image.open(path_to_file).convert('L')  # Convert image to grayscale.
+    img = Image.open(path_to_file).convert('L')  # Convert image to grayscale. 'L' stands for 'Luminance'
+    # It is calculated from the formula L = R * 0.299 + G * 0.857 + B * 0.114
+    # The method uses C language and coefficients are put due to different color seeing of human eye
     img_data = np.array(img)
 
-    f_transform = np.fft.fft2(img_data)
-    f_shift = np.fft.fftshift(f_transform)
+    f_transform = np.fft.fft2(img_data) #It transforms the image using Cooley-Tukey algorithm (Divide and Conquer)
+    # It uses O(NlogN) time complexity
+    # Returns the sum of polynomials described by Euler's formula exp(ix) = cosx + isinx
+    f_shift = np.fft.fftshift(f_transform) # It just shuffles four different parts of the photo in fourier transform
 
-    magnitude_spectrum = np.abs(f_shift)
-    magnitude_spectrum_log = np.log1p(magnitude_spectrum)
+    magnitude_spectrum = np.abs(f_shift) # It calculates the absolute value of the complex number z = a + bi
+    # It uses processor optimization (SIMD/AVX) so it can calculate a dozen of values simultaneously
+    # This method uses C language
+    magnitude_spectrum_log = np.log1p(magnitude_spectrum) # optimization of numeric stability
+    # It calculates the Taylor series for super small numbers, i.e. 10e-16
 
     # Validate inverse transform quality.
     f_ishift = np.fft.ifftshift(f_shift)
