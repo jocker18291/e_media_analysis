@@ -1,6 +1,5 @@
 import binascii
 import struct
-import zlib
 
 
 def is_critical_chunk(chunk_type):
