@@ -5,7 +5,7 @@ from PIL import Image
 
 def fourier(path_to_file):
     img = Image.open(path_to_file).convert('L')  # Convert image to grayscale. 'L' stands for 'Luminance'
-    # It is calculated from the formula L = R * 0.299 + G * 0.857 + B * 0.114
+    # It is calculated from the formula L = R * 0.299 + G * 0.587 + B * 0.114
     # The method uses C language and coefficients are put due to different color seeing of human eye
     img_data = np.array(img)
 
