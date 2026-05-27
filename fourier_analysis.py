@@ -16,11 +16,13 @@ def fourier(path_to_file):
     # While the high frequencies (which correspond to fine details) are located at the center. 
     # By applying fftshift, we can move the low frequencies to the center of the spectrum, making it easier to analyze and visualize the frequency components of the image.
 
-    magnitude_spectrum = np.abs(f_shift) # It calculates the absolute value of the complex number z = a + bi
+    magnitude_spectrum = np.abs(f_shift) # It calculates the absolute value of the complex number z = a + bi -- the magnitude
     # It uses processor optimization (SIMD/AVX) so it can calculate a dozen of values simultaneously
-    # This method uses C language
-    magnitude_spectrum_log = np.log1p(magnitude_spectrum) # optimization of numeric stability
-    # It calculates the Taylor series for super small numbers, i.e. 10e-16
+    # Monitors displays only scalars (brightness) so we need to convert complex numbers to real numbers (magnitude) for visualization
+    magnitude_spectrum_log = np.log1p(magnitude_spectrum) # It applies logarithmic scaling to the magnitude spectrum. 
+    # The log1p function computes log(1 + x) for each element in the input array, which helps to enhance the visibility of low-magnitude components in the spectrum. 
+    # This is particularly useful because the magnitude spectrum can have a wide range of values, and without scaling,
+    # the low-magnitude components may be difficult to see in a visualization.
 
     # Validate inverse transform quality.
     f_ishift = np.fft.ifftshift(f_shift)
