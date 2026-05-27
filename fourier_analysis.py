@@ -6,13 +6,15 @@ from PIL import Image
 def fourier(path_to_file):
     img = Image.open(path_to_file).convert('L')  # Convert image to grayscale. 'L' stands for 'Luminance'
     # It is calculated from the formula L = R * 0.299 + G * 0.587 + B * 0.114
-    # The method uses C language and coefficients are put due to different color seeing of human eye
-    img_data = np.array(img)
+    # It is because human eye is more sensitive to luminance than to color and reducing the image to a single channel 
+    img_data = np.array(img) # The image contains binary data, so we need to convert it to a numerical format (2D array of pixel values) for processing.
 
     f_transform = np.fft.fft2(img_data) #It transforms the image using Cooley-Tukey algorithm (Divide and Conquer)
-    # It uses O(NlogN) time complexity
     # Returns the sum of polynomials described by Euler's formula exp(ix) = cosx + isinx
     f_shift = np.fft.fftshift(f_transform) # It just shuffles four different parts of the photo in fourier transform
+    # The reason for this is that the low frequencies (which correspond to the overall structure of the image) are located at the corners of the Fourier transform
+    # While the high frequencies (which correspond to fine details) are located at the center. 
+    # By applying fftshift, we can move the low frequencies to the center of the spectrum, making it easier to analyze and visualize the frequency components of the image.
 
     magnitude_spectrum = np.abs(f_shift) # It calculates the absolute value of the complex number z = a + bi
     # It uses processor optimization (SIMD/AVX) so it can calculate a dozen of values simultaneously
